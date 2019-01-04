@@ -1,0 +1,19 @@
+<h1>Datumsliste</h1>
+<form method="post" action="{% url 'vaple_core:add_event_date' event.id %}">
+    {% csrf_token %}
+    <input name="event" type="hidden" value="{{ event.id }}" />
+    <input name="date" type="hidden" value="{{ today }}" />
+    <input type="submit" value="Hinzufügen">
+</form>
+<ul>
+{% for date in eventdate_list %}
+    <li>
+        <form method="post" action="{% url 'vaple_core:update_event_date' date.id %}">
+            {% csrf_token %}
+            <input name="date" type="date" value="{{ date.date.isoformat }}" />
+            <input name="event" type="hidden" value="{{ event.id }}" />
+            <input type="submit" value="Speichern">
+        </form>
+    </li>
+{% endfor %}
+</ul>
