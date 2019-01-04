@@ -1,0 +1,26 @@
+<h1>Veranstaltung hinzufügen</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'vaple_core:add_event' %}" method="post">
+    {% csrf_token %}
+    <label for="title">Titel</label>
+    <input name="title" type="text" />
+    <br />
+
+    <label>Datum</label>
+    <input name="dates" type="date" />
+    <br />
+
+    <label>Raum</label>
+    <input name="room" type="text" />
+    <br />
+
+    <label>Beschallungsart</label>
+    <label>BA</label>
+    <label>Rider</label>
+    <label>Mitarbeiter</label>
+    <label>Weitere Infos</label>
+    <label>Ordner</label>
+    <input type="submit" value="Speichern">
+</form>

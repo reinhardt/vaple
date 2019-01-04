@@ -1,0 +1,32 @@
+{% if events %}
+    <h1>Veranstaltungen</h1>
+    <a href="{% url 'vaple_core:add_event' %}">Hinzufügen</a>
+    <table>
+        <tr>
+            <th>Titel</th>
+            <th>Datum</th>
+            <th>Raum</th>
+            <th>Beschallungsart</th>
+            <th>BA</th>
+            <th>Rider</th>
+            <th>Mitarbeiter</th>
+            <th>Weitere Infos</th>
+            <th>Ordner</th>
+        </tr>
+    {% for event in events %}
+        <tr>
+            <td><a href="/vaple/{{ event.id }}/">{{ event.title }}</a></td>
+            <td>22.06.2019, 29.06.2019</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Test</td>
+            <td></td>
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>Keine Veranstaltungen mit den gewählten Kriterien gefunden.</p>
+{% endif %}
