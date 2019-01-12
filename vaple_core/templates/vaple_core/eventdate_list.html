@@ -14,6 +14,11 @@
             <input name="event" type="hidden" value="{{ event.id }}" />
             <input type="submit" value="Speichern">
         </form>
+        <form method="post" action="{% url 'vaple_core:delete_event_date' date.id %}">
+            {% csrf_token %}
+            <input type="submit" value="Entfernen">
+        </form>
     </li>
 {% endfor %}
 </ul>
+<a href="{% url 'vaple_core:index' %}">Zurück</a>

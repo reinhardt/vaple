@@ -34,6 +34,12 @@ class EventUpdate(generic.edit.UpdateView):
     title = 'Veranstaltung bearbeiten'
 
 
+class EventDelete(generic.edit.DeleteView):
+    model = Event
+    success_url = reverse_lazy('vaple_core:index')
+    title = 'Veranstaltung löschen'
+
+
 class EventDateCreate(generic.edit.CreateView):
     model = EventDate
     fields = [
@@ -77,3 +83,15 @@ class EventDateList(generic.list.ListView):
         context['event'] = Event.objects.get(pk=self.kwargs['pk'])
         context['today'] = date.today().isoformat()
         return context
+
+
+class EventDateDelete(generic.edit.DeleteView):
+    model = EventDate
+    template_name_suffix = '_form'
+
+    @property
+    def success_url(self):
+        return reverse_lazy(
+            'vaple_core:event_dates',
+            args=[self.object.event.id],
+        )
