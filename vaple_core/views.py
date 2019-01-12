@@ -1,35 +1,54 @@
 from datetime import date
-from django.shortcuts import render
+from django.forms import ModelForm
 from django.urls import reverse_lazy
 from django.views import generic
 from .models import Event
 from .models import EventDate
 
 
-def index(request):
-    events = Event.objects.order_by('-title')[:50]
-    context = {
-        'events': events,
-    }
-    return render(request, 'vaple_core/index.html', context)
+EVENT_FIELDS = [
+            'title',
+            'room',
+            'sound_type',
+        ]
+
+
+class EventForm(ModelForm):
+    class Meta:
+        model = Event
+        fields = EVENT_FIELDS
+
+    def as_table_row(self):
+        "Return this form rendered as HTML <td>s."
+        return self._html_output(
+            normal_row='<td%(html_class_attr)s>%(errors)s%(field)s%(help_text)s</td>',
+            error_row='<td>%s</td>',
+            row_ender='</td>',
+            help_text_html='<span class="helptext">%s</span>',
+            errors_on_separate_row=False,
+        )
+
+
+class EventOverview(generic.list.ListView):
+    model = Event
+    template_name = 'vaple_core/event_list.html'
+    paginate_by = 50
+
+    def get_queryset(self):
+        queryset = self.model._default_manager.all()
+        return [(event, EventForm(instance=event)) for event in queryset]
 
 
 class EventCreate(generic.edit.CreateView):
     model = Event
-    fields = [
-        'title',
-        'room',
-    ]
+    fields = EVENT_FIELDS
     success_url = reverse_lazy('vaple_core:index')
     title = 'Veranstaltung hinzufügen'
 
 
 class EventUpdate(generic.edit.UpdateView):
     model = Event
-    fields = [
-        'title',
-        'room',
-    ]
+    fields = EVENT_FIELDS
     success_url = reverse_lazy('vaple_core:index')
     title = 'Veranstaltung bearbeiten'
 

@@ -1,10 +1,9 @@
-{% if events %}
     <h1>Veranstaltungen</h1>
     <a href="{% url 'vaple_core:add_event' %}">Hinzufügen</a>
     <table>
         <tr>
-            <th>Titel</th>
             <th>Datum</th>
+            <th>Titel</th>
             <th>Raum</th>
             <th>Beschallungsart</th>
             <th>BA</th>
@@ -13,14 +12,12 @@
             <th>Weitere Infos</th>
             <th>Ordner</th>
         </tr>
-    {% for event in events %}
+    {% for event, form in object_list %}
         <tr>
           <form method="post" action="{% url 'vaple_core:update_event' event.id %}">
             {% csrf_token %}
-            <td><input type="text" name="title" value="{{ event.title }}"></td>
             <td>{% for date in event.eventdate_set.all %}{{ date.date }}, {% endfor %}<a href="{% url 'vaple_core:event_dates' event.id %}">Bearbeiten</a></td>
-            <td><input type="text" name="room" value="{{ event.room }}"></td>
-            <td></td>
+            {{ form.as_table_row }}
             <td></td>
             <td></td>
             <td></td>
@@ -28,13 +25,13 @@
             <td></td>
             <td><input type="submit" value="Speichern"></td>
           </form>
+
           <form method="post" action="{% url 'vaple_core:delete_event' event.id %}">
             {% csrf_token %}
             <td><input type="submit" value="Löschen"></td>
           </form>
         </tr>
+    {% empty %}
+        <p>Keine Veranstaltungen mit den gewählten Kriterien gefunden.</p>
     {% endfor %}
     </table>
-{% else %}
-    <p>Keine Veranstaltungen mit den gewählten Kriterien gefunden.</p>
-{% endif %}

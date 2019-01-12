@@ -4,7 +4,7 @@ from . import views
 
 app_name = 'vaple_core'
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.EventOverview.as_view(), name='index'),
     path('events/add', views.EventCreate.as_view(), name='add_event'),
     path('events/<int:pk>/update/', views.EventUpdate.as_view(), name='update_event'),
     path('events/<int:pk>/delete/', views.EventDelete.as_view(), name='delete_event'),
