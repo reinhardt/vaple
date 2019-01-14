@@ -6,11 +6,8 @@ from .models import Event
 from .models import EventDate
 
 
-EVENT_FIELDS = [
-            'title',
-            'room',
-            'sound_type',
-        ]
+EVENT_FIELDS = [field.name for field in Event._meta.fields
+                if field.name != 'id']
 
 
 class EventForm(ModelForm):
@@ -37,6 +34,13 @@ class EventOverview(generic.list.ListView):
     def get_queryset(self):
         queryset = self.model._default_manager.all()
         return [(event, EventForm(instance=event)) for event in queryset]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['verbose_names'] = [
+            field.verbose_name for field in Event._meta.fields
+            if field.name != 'id']
+        return context
 
 
 class EventCreate(generic.edit.CreateView):

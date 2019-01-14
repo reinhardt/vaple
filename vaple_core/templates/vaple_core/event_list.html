@@ -2,26 +2,18 @@
     <a href="{% url 'vaple_core:add_event' %}">Hinzufügen</a>
     <table>
         <tr>
+        {% for name in verbose_names %}
+            <th>{{ name }}</th>
+        {% endfor %}
             <th>Datum</th>
-            <th>Titel</th>
-            <th>Raum</th>
-            <th>Beschallungsart</th>
-            <th>BA</th>
-            <th>Rider</th>
             <th>Mitarbeiter</th>
-            <th>Weitere Infos</th>
-            <th>Ordner</th>
         </tr>
     {% for event, form in object_list %}
         <tr>
           <form method="post" action="{% url 'vaple_core:update_event' event.id %}">
             {% csrf_token %}
-            <td>{% for date in event.eventdate_set.all %}{{ date.date }}, {% endfor %}<a href="{% url 'vaple_core:event_dates' event.id %}">Bearbeiten</a></td>
             {{ form.as_table_row }}
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><textarea>Test</textarea></td>
+            <td>{% for date in event.eventdate_set.all %}{{ date.date }}, {% endfor %}<a href="{% url 'vaple_core:event_dates' event.id %}">Bearbeiten</a></td>
             <td></td>
             <td><input type="submit" value="Speichern"></td>
           </form>
