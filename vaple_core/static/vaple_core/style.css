@@ -1,0 +1,9 @@
+table.event-list tr:nth-child(odd) {
+    background-color: #EEE;
+}
+table.event-list td textarea {
+    height: 3em;
+}
+table.event-list td select {
+    background-color: #FFF;
+}

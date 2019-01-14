@@ -1,5 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Veranstaltungen - Vaple{% endblock %}
+
+{% block content %}
     <h1>Veranstaltungen</h1>
-    <table>
+    <table class='event-list'>
         <tr>
         {% for name in verbose_names %}
             <th>{{ name }}</th>
@@ -33,3 +38,4 @@
         <input name="sound_type" type="hidden" value="NONE" />
         <input type="submit" value="Hinzufügen">
     </form>
+{% endblock %}
