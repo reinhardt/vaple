@@ -1,5 +1,4 @@
     <h1>Veranstaltungen</h1>
-    <a href="{% url 'vaple_core:add_event' %}">Hinzufügen</a>
     <table>
         <tr>
         {% for name in verbose_names %}
@@ -27,3 +26,10 @@
         <p>Keine Veranstaltungen mit den gewählten Kriterien gefunden.</p>
     {% endfor %}
     </table>
+    <form method="post" action="{% url 'vaple_core:add_event' %}">
+        {% csrf_token %}
+        <input name="title" type="hidden" value="Neue Veranstaltung" />
+        <input name="room" type="hidden" value="" />
+        <input name="sound_type" type="hidden" value="NONE" />
+        <input type="submit" value="Hinzufügen">
+    </form>

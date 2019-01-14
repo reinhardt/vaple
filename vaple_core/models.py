@@ -10,12 +10,17 @@ class Event(models.Model):
         ('MNTR', 'Konzert mit Monitor'),
     )
     title = models.CharField(verbose_name='Titel', max_length=512)
-    room = models.CharField(verbose_name='Raum', max_length=512, default='')
+    room = models.CharField(
+        verbose_name='Raum',
+        max_length=512,
+        blank=True,
+        default='',
+    )
     sound_type = models.CharField(
         verbose_name='Beschallungsart',
         max_length=8,
         choices=SOUND_TYPES,
-        default='',
+        default=SOUND_TYPES[0],
     )
     ba = models.FilePathField(
         verbose_name='BA',
