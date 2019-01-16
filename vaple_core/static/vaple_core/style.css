@@ -7,3 +7,6 @@ table.event-list td textarea {
 table.event-list td select {
     background-color: #FFF;
 }
+table.event-list .wanted {
+    background-color: #FF7900;
+}
