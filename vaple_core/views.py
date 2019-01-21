@@ -121,19 +121,31 @@ class EventForm(ModelForm):
 
 
 class EventOverview(generic.list.ListView):
-    model = Event
+    model = EventDate
     template_name = 'vaple_core/event_list.html'
     paginate_by = 50
 
     def get_queryset(self):
-        queryset = self.model._default_manager.all()
-        return [(event, EventForm(instance=event)) for event in queryset]
+        queryset = self.model._default_manager.order_by('date')
+        return [
+            (
+                eventdate,
+                eventdate.event,
+                EventForm(instance=eventdate.event),
+            ) for eventdate in queryset
+        ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['verbose_names'] = [
-            self.model._meta.get_field(field).verbose_name
+            Event._meta.get_field(field).verbose_name
             for field in EVENT_FIELDS]
+        context['orphans'] = [
+            (
+                event,
+                EventForm(instance=event),
+            ) for event in Event.objects.filter(eventdate=None)
+        ]
         return context
 
 
@@ -168,8 +180,7 @@ class EventDateCreate(generic.edit.CreateView):
     @property
     def success_url(self):
         return reverse_lazy(
-            'vaple_core:event_dates',
-            args=[self.object.event.id],
+            'vaple_core:index',
         )
 
 
@@ -183,8 +194,7 @@ class EventDateUpdate(generic.edit.UpdateView):
     @property
     def success_url(self):
         return reverse_lazy(
-            'vaple_core:event_dates',
-            args=[self.object.event.id],
+            'vaple_core:index',
         )
 
 
@@ -209,6 +219,5 @@ class EventDateDelete(generic.edit.DeleteView):
     @property
     def success_url(self):
         return reverse_lazy(
-            'vaple_core:event_dates',
-            args=[self.object.event.id],
+            'vaple_core:index',
         )

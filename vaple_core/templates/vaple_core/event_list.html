@@ -6,28 +6,70 @@
     <h1>Veranstaltungen</h1>
     <table class='event-list'>
         <tr>
+            <th>Datum</th>
         {% for name in verbose_names %}
             <th>{{ name }}</th>
         {% endfor %}
-            <th>Datum</th>
         </tr>
-    {% for event, form in object_list %}
+    {% for eventdate, event, form in object_list %}
         <tr>
+            <td>
+                <form method="post" action="{% url 'vaple_core:update_event_date' eventdate.id %}">
+                    {% csrf_token %}
+                    <input name="date" type="date" value="{{ eventdate.date.isoformat }}" />
+                    <input type="submit" value="Speichern">
+                </form>
+                <form method="post" action="{% url 'vaple_core:add_event_date' %}">
+                    {% csrf_token %}
+                    <input name="event" type="hidden" value="{{ event.id }}" />
+                    <input name="date" type="hidden" value="{{ eventdate.date.isoformat }}" />
+                    <input type="submit" value="Hinzufügen">
+                </form>
+            </td>
           <form method="post" action="{% url 'vaple_core:update_event' event.id %}">
             {% csrf_token %}
             {{ form.as_table_row }}
-            <td>{% for date in event.eventdate_set.all %}{{ date.date }}, {% endfor %}<a href="{% url 'vaple_core:event_dates' event.id %}">Bearbeiten</a></td>
             <td></td>
             <td><input type="submit" value="Speichern"></td>
           </form>
 
+          {% if event.eventdate_set.all|length > 1 %}
+          <form method="post" action="{% url 'vaple_core:delete_event_date' eventdate.id %}">
+            {% csrf_token %}
+            <td><input type="submit" value="Entfernen"></td>
+          </form>
+          {% else %}
           <form method="post" action="{% url 'vaple_core:delete_event' event.id %}">
             {% csrf_token %}
             <td><input type="submit" value="Löschen"></td>
           </form>
+          {% endif %}
         </tr>
     {% empty %}
         <p>Keine Veranstaltungen mit den gewählten Kriterien gefunden.</p>
+    {% endfor %}
+    {% for event, form in orphans %}
+        <tr>
+            <td>
+                <form method="post" action="{% url 'vaple_core:add_event_date' %}">
+                    {% csrf_token %}
+                    <input name="event" type="hidden" value="{{ event.id }}" />
+                    <input name="date" type="date" value="{{ today }}" />
+                    <input type="submit" value="Speichern">
+                </form>
+            </td>
+          <form method="post" action="{% url 'vaple_core:update_event' event.id %}">
+            {% csrf_token %}
+            {{ form.as_table_row }}
+            <td></td>
+            <td><input type="submit" value="Speichern"></td>
+          </form>
+          <form method="post" action="{% url 'vaple_core:delete_event' event.id %}">
+            {% csrf_token %}
+            <td><input type="submit" value="Löschen"></td>
+          </form>
+
+        </tr>
     {% endfor %}
     </table>
     <form method="post" action="{% url 'vaple_core:add_event' %}">
@@ -35,6 +77,6 @@
         <input name="title" type="hidden" value="Neue Veranstaltung" />
         <input name="room" type="hidden" value="" />
         <input name="sound_type" type="hidden" value="NONE" />
-        <input type="submit" value="Hinzufügen">
+        <input type="submit" value="Neu">
     </form>
 {% endblock %}
