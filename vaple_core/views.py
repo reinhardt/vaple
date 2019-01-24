@@ -1,4 +1,5 @@
 from datetime import date
+from datetime import timedelta
 from django.forms import ModelForm
 from django.urls import reverse_lazy
 from django.utils.html import conditional_escape
@@ -16,15 +17,10 @@ EVENT_FIELDS = [
     'rider',
     'folder',
     'additional_info',
-    'employees',
 ]
 
 
-class EventForm(ModelForm):
-    class Meta:
-        model = Event
-        fields = EVENT_FIELDS
-
+class VapleForm(ModelForm):
     def extra_classes(self, name):
         classes = []
         if name in self.instance.fields_wanted():
@@ -119,18 +115,103 @@ class EventForm(ModelForm):
             errors_on_separate_row=False,
         )
 
+    def as_table_cell(self):
+        "Return this form rendered as HTML <td>s."
+        return self._html_output(
+            normal_row='<span%(html_class_attr)s>%(errors)s%(field)s%(help_text)s</span>',
+            error_row='<span>%s</span>',
+            row_ender='</span>',
+            help_text_html='<span class="helptext">%s</span>',
+            errors_on_separate_row=False,
+        )
+
+
+class EventForm(VapleForm):
+    class Meta:
+        model = Event
+        fields = EVENT_FIELDS
+
+
+class EventDateForm(VapleForm):
+    class Meta:
+        model = EventDate
+        fields = ['employees']
+
 
 class EventOverview(generic.list.ListView):
     model = EventDate
     template_name = 'vaple_core/event_list.html'
     paginate_by = 50
 
+    def add_months(self, basedate, num_months=1):
+        return basedate.replace(month=(basedate.month + num_months) % 12)
+
+    def get_month_range(self, basedate):
+        date_from = date(year=basedate.year, month=basedate.month, day=1)
+        next_month = self.add_months(date_from)
+        date_to = next_month - timedelta(days=1)
+        return date_from, date_to
+
+    @property
+    def current_month(self):
+        today = date.today()
+        return self.get_month_range(today)
+
+    @property
+    def date_from(self):
+        current_month = self.current_month
+        date_from_iso = self.request.GET.get('from')
+        if date_from_iso:
+            date_from = date.fromisoformat(date_from_iso)
+        else:
+            date_from = current_month[0]
+        return date_from
+
+    @property
+    def date_to(self):
+        current_month = self.current_month
+        date_to_iso = self.request.GET.get('to')
+        if date_to_iso:
+            date_to = date.fromisoformat(date_to_iso)
+        else:
+            date_to = current_month[1]
+        return date_to
+
+    def quicklinks(self):
+        quicklinks = []
+        current_month = self.current_month
+        quicklinks.append(
+            {
+                'date_from': current_month[0],
+                'date_to': current_month[1],
+                'title': current_month[0].strftime('%B'),
+            }
+        )
+        for n in range(1, 4):
+            basedate = self.add_months(current_month[0], num_months=n)
+            date_from, date_to = self.get_month_range(basedate)
+            quicklinks.append(
+                {
+                    'date_from': date_from,
+                    'date_to': date_to,
+                    'title': date_from.strftime('%B'),
+                }
+            )
+        return quicklinks
+
     def get_queryset(self):
+        date_from = self.date_from
+        date_to = self.date_to
         queryset = self.model._default_manager.order_by('date')
+        if date_from:
+            queryset = queryset.filter(date__gt=date_from)
+        if date_to:
+            queryset = queryset.filter(date__lt=date_to)
         return [
             (
                 eventdate,
                 eventdate.event,
+                EventDateForm(instance=eventdate),
                 EventForm(instance=eventdate.event),
             ) for eventdate in queryset
         ]
@@ -146,6 +227,9 @@ class EventOverview(generic.list.ListView):
                 EventForm(instance=event),
             ) for event in Event.objects.filter(eventdate=None)
         ]
+        context['date_from'] = self.date_from
+        context['date_to'] = self.date_to
+        context['quicklinks'] = self.quicklinks
         return context
 
 
@@ -188,6 +272,7 @@ class EventDateUpdate(generic.edit.UpdateView):
     model = EventDate
     fields = [
         'date',
+        'employees',
     ]
     title = 'Datum bearbeiten'
 

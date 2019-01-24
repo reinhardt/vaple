@@ -56,12 +56,6 @@ class Event(models.Model):
         allow_files=False,
         allow_folders=True,
     )
-    employees = models.ManyToManyField(
-        Employee,
-        verbose_name='Mitarbeiter',
-        related_name='Veranstaltung',
-        blank=True,
-    )
     additional_info = models.TextField(
         verbose_name='Weitere informationen',
         null=True,
@@ -73,12 +67,6 @@ class Event(models.Model):
 
     def fields_wanted(self):
         wanted = []
-        if (
-                self.sound_type == self.WITH_MONITOR and len(self.employees.values()) < 3 or
-                self.sound_type == self.CONCERT and len(self.employees.values()) < 2 or
-                self.sound_type == self.SPEECH and len(self.employees.values()) < 1
-        ):
-            wanted.append('employees')
         if self.sound_type in [self.CONCERT, self.WITH_MONITOR]:
             if not self.rider:
                 wanted.append('rider')
@@ -86,5 +74,24 @@ class Event(models.Model):
 
 
 class EventDate(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+    )
     date = models.DateField()
+    employees = models.ManyToManyField(
+        Employee,
+        verbose_name='Mitarbeiter',
+        related_name='Veranstaltungstermin',
+        blank=True,
+    )
+
+    def fields_wanted(self):
+        wanted = []
+        if (
+                self.event.sound_type == Event.WITH_MONITOR and len(self.employees.values()) < 3 or
+                self.event.sound_type == Event.CONCERT and len(self.employees.values()) < 2 or
+                self.event.sound_type == Event.SPEECH and len(self.employees.values()) < 1
+        ):
+            wanted.append('employees')
+        return wanted

@@ -1,3 +1,6 @@
+.quicklinks {
+    padding-bottom: .5em;
+}
 table.event-list tr:nth-child(odd) {
     background-color: #EEE;
 }
@@ -10,3 +13,6 @@ table.event-list td select {
 table.event-list .wanted {
     background-color: #FF7900;
 }
+/*table.event-list .save {
+    display: none;
+}*/
