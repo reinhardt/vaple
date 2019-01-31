@@ -1,18 +1,32 @@
 .quicklinks {
     padding-bottom: .5em;
 }
-table.event-list tr:nth-child(odd) {
+div.event-list form {
+    display: contents;
+}
+div.event-list .row {
+    display: table-row;
+    height: 4em;
+}
+div.event-list .row:nth-child(odd) {
     background-color: #EEE;
 }
-table.event-list td textarea {
+div.event-list span {
+    display: table-cell;
+    height: 4em;
+    padding-right: 1em;
+}
+div.event-list span.small {
+}
+div.event-list span textarea {
     height: 3em;
 }
-table.event-list td select {
+div.event-list span select {
     background-color: #FFF;
 }
-table.event-list .wanted {
+div.event-list .wanted {
     background-color: #FF7900;
 }
-/*table.event-list .save {
+div.event-list .save {
     display: none;
-}*/
+}

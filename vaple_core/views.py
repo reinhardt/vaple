@@ -115,7 +115,7 @@ class VapleForm(ModelForm):
             errors_on_separate_row=False,
         )
 
-    def as_table_cell(self):
+    def as_spans(self):
         "Return this form rendered as HTML <td>s."
         return self._html_output(
             normal_row='<span%(html_class_attr)s>%(errors)s%(field)s%(help_text)s</span>',
