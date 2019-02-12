@@ -6,27 +6,34 @@ div.event-list form {
 }
 div.event-list .row {
     display: table-row;
-    height: 4em;
 }
 div.event-list .row:nth-child(odd) {
     background-color: #EEE;
 }
+div.event-list .save,
+div.event-list span.save {
+    display: none;
+}
 div.event-list span {
     display: table-cell;
     height: 4em;
-    padding-right: 1em;
+    vertical-align: middle;
 }
 div.event-list span.small {
 }
 div.event-list span textarea {
-    height: 3em;
+    height: 6em;
 }
 div.event-list span select {
     background-color: #FFF;
 }
+div.event-list span ul#id_employees {
+    list-style-type: none;
+    padding-left: 0;
+}
 div.event-list .wanted {
     background-color: #FF7900;
 }
-div.event-list .save {
-    display: none;
+div.event-list .row:nth-child(odd) .wanted {
+    background-color: #EE6800;
 }
