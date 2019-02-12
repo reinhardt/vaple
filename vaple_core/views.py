@@ -233,27 +233,41 @@ class EventOverview(generic.list.ListView):
         return context
 
 
-class EventCreate(generic.edit.CreateView):
+class RedirectToIndex(object):
+
+    @property
+    def success_url(self):
+        url = reverse_lazy(
+            'vaple_core:index',
+        )
+        query = {}
+        query['from'] = self.request.POST.get('from')
+        query['to'] = self.request.POST.get('to')
+        query = {key: value for key, value in query.items() if value}
+        querystr = '&'.join(['='.join(item) for item in query.items()])
+        if querystr:
+            url = '{url}?{querystr}'.format(url=url, querystr=querystr)
+        return url
+
+
+class EventCreate(RedirectToIndex, generic.edit.CreateView):
     model = Event
     fields = EVENT_FIELDS
-    success_url = reverse_lazy('vaple_core:index')
     title = 'Veranstaltung hinzufügen'
 
 
-class EventUpdate(generic.edit.UpdateView):
+class EventUpdate(RedirectToIndex, generic.edit.UpdateView):
     model = Event
     fields = EVENT_FIELDS
-    success_url = reverse_lazy('vaple_core:index')
     title = 'Veranstaltung bearbeiten'
 
 
-class EventDelete(generic.edit.DeleteView):
+class EventDelete(RedirectToIndex, generic.edit.DeleteView):
     model = Event
-    success_url = reverse_lazy('vaple_core:index')
     title = 'Veranstaltung löschen'
 
 
-class EventDateCreate(generic.edit.CreateView):
+class EventDateCreate(RedirectToIndex, generic.edit.CreateView):
     model = EventDate
     fields = [
         'date',
@@ -261,26 +275,14 @@ class EventDateCreate(generic.edit.CreateView):
     ]
     title = 'Datum hinzufügen'
 
-    @property
-    def success_url(self):
-        return reverse_lazy(
-            'vaple_core:index',
-        )
 
-
-class EventDateUpdate(generic.edit.UpdateView):
+class EventDateUpdate(RedirectToIndex, generic.edit.UpdateView):
     model = EventDate
     fields = [
         'date',
         'employees',
     ]
     title = 'Datum bearbeiten'
-
-    @property
-    def success_url(self):
-        return reverse_lazy(
-            'vaple_core:index',
-        )
 
 
 class EventDateList(generic.list.ListView):
@@ -297,12 +299,6 @@ class EventDateList(generic.list.ListView):
         return context
 
 
-class EventDateDelete(generic.edit.DeleteView):
+class EventDateDelete(RedirectToIndex, generic.edit.DeleteView):
     model = EventDate
     template_name_suffix = '_form'
-
-    @property
-    def success_url(self):
-        return reverse_lazy(
-            'vaple_core:index',
-        )

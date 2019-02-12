@@ -6,6 +6,7 @@ with import <nixpkgs> {}; {
       python3Full
       python3Packages.virtualenv
       libxml2
+      wkhtmltopdf
     ];
     LIBRARY_PATH="${libxml2}/lib";
     shellHook = ''

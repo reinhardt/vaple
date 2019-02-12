@@ -27,10 +27,13 @@
         </div>
     {% for eventdate, event, eventdate_form, event_form in object_list %}
         <div class="row event-{{ event.id }}">
-            <form id="eventdate-add-form-{{ eventdate.id }}" method="post" action="{% url 'vaple_core:add_event_date' %}">
+            <form id="eventdate-add-form-{{ eventdate.id }}" method="post" class="pat-inject"
+                  action="{% url 'vaple_core:add_event_date' %}#event-list">
                 {% csrf_token %}
                 <input name="event" type="hidden" value="{{ event.id }}" />
                 <input name="date" type="hidden" value="{{ eventdate.date.isoformat }}" />
+                <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
+                <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
                 <span class="small">
                     <input type="submit" value="Hinzufügen">
                 </span>
@@ -41,6 +44,8 @@
                 <span>
                     <input name="date" type="date" value="{{ eventdate.date.isoformat }}" />
                     <input name="event" type="hidden" value="{{ event.id }}" />
+                    <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
+                    <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
                     <input type="submit" value="Speichern" class="save eventdate">
                 </span>
             </form>
@@ -50,25 +55,35 @@
                 <input name="event" type="hidden" value="{{ event.id }}" />
                 <input name="date" type="hidden" value="{{ eventdate.date.isoformat }}" />
                 {{ eventdate_form.as_spans }}
+                <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
+                <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
                 <span class="save employees">
                     <input type="submit" value="Speichern">
                 </span>
             </form>
-            <form id="event-form-{{ event.id }}-{{ eventdate.id }}" method="post" class="pat-autosubmit pat-inject event-form-{{ event.id }}" action="{% url 'vaple_core:update_event' event.id %}#event-list">
+            <form id="event-form-{{ event.id }}-{{ eventdate.id }}" method="post" class="pat-autosubmit pat-inject event-form-{{ event.id }}"
+                  action="{% url 'vaple_core:update_event' event.id %}#event-list">
               {% csrf_token %}
               {{ event_form.as_spans }}
               <span></span>
+              <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
+              <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
               <span class="save event"><input type="submit" value="Speichern"></span>
             </form>
 
             {% if event.eventdate_set.all|length > 1 %}
-            <form method="post" action="{% url 'vaple_core:delete_event_date' eventdate.id %}">
+            <form method="post" class="pat-autosubmit pat-inject"
+                  action="{% url 'vaple_core:delete_event_date' eventdate.id %}#event-list">
               {% csrf_token %}
+              <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
+              <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
               <span><input type="submit" value="Entfernen"></span>
             </form>
             {% else %}
             <form method="post" action="{% url 'vaple_core:delete_event' event.id %}">
               {% csrf_token %}
+              <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
+              <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
               <span><input type="submit" value="Löschen"></span>
             </form>
             {% endif %}
@@ -85,6 +100,8 @@
               <input name="event" type="hidden" value="{{ event.id }}" />
               <span>
                   <input name="date" type="date" value="{{ today }}" />
+                  <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
+                  <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
                   <input class="save" type="submit" value="Speichern">
               </span>
           </form>
@@ -94,10 +111,14 @@
             {% csrf_token %}
             {{ form.as_spans }}
             <span></span>
+            <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
+            <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
             <span class="save"><input type="submit" value="Speichern"></span>
           </form>
           <form method="post" action="{% url 'vaple_core:delete_event' event.id %}">
             {% csrf_token %}
+            <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
+            <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
             <span><input type="submit" value="Löschen"></span>
           </form>
 
@@ -108,6 +129,8 @@
         <input name="title" type="hidden" value="Neue Veranstaltung" />
         <input name="room" type="hidden" value="" />
         <input name="sound_type" type="hidden" value="NONE" />
+        <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
+        <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
         <input type="submit" value="Neu">
     </form>
 {% endblock %}
