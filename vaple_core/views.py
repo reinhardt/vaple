@@ -1,10 +1,12 @@
 from datetime import date
 from datetime import timedelta
 from django.forms import ModelForm
+from django.forms import CheckboxSelectMultiple
 from django.urls import reverse_lazy
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.views import generic
+from urllib.parse import urlencode
 from .models import Event
 from .models import EventDate
 
@@ -136,6 +138,9 @@ class EventDateForm(VapleForm):
     class Meta:
         model = EventDate
         fields = ['employees']
+        widgets = {
+            'employees': CheckboxSelectMultiple(),
+        }
 
 
 class EventOverview(generic.list.ListView):
@@ -244,7 +249,7 @@ class RedirectToIndex(object):
         query['from'] = self.request.POST.get('from')
         query['to'] = self.request.POST.get('to')
         query = {key: value for key, value in query.items() if value}
-        querystr = '&'.join(['='.join(item) for item in query.items()])
+        querystr = urlencode(query)
         if querystr:
             url = '{url}?{querystr}'.format(url=url, querystr=querystr)
         return url
