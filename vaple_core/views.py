@@ -7,6 +7,7 @@ from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.views import generic
 from urllib.parse import urlencode
+from wkhtmltopdf.views import PDFTemplateView
 from .models import Event
 from .models import EventDate
 
@@ -236,6 +237,17 @@ class EventOverview(generic.list.ListView):
         context['date_to'] = self.date_to
         context['quicklinks'] = self.quicklinks
         return context
+
+
+class EventOverviewExport(EventOverview, PDFTemplateView):
+
+    filename = 'export-full.pdf'
+    cmd_options = {
+        'orientation': 'Landscape',
+    }
+
+    def get(self, request, *args, **kwargs):
+        return EventOverview.get(self, request, *args, **kwargs)
 
 
 class RedirectToIndex(object):

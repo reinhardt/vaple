@@ -13,4 +13,5 @@ urlpatterns = [
     path('dates/add', views.EventDateCreate.as_view(), name='add_event_date'),
     path('dates/<int:pk>/update/', views.EventDateUpdate.as_view(), name='update_event_date'),
     path('dates/<int:pk>/delete/', views.EventDateDelete.as_view(), name='delete_event_date'),
+    path('export-full', views.EventOverviewExport.as_view(), name='export-full'),
 ]
