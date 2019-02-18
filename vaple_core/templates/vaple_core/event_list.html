@@ -16,8 +16,11 @@
         <input type="submit" value="Filtern" />
       </form>
     </div>
-    <div class='event-list' id="event-list">
-        <div class="row headers">
+    <div class="export">
+        <a href="export-full?from={{ date_from.isoformat }}&to={{ date_to.isoformat }}">Voller Export</a>
+    </div>
+    <div class="event-list" id="event-list">
+        <div class="row header">
             <span class="small"></span>
             <span>Datum</span>
             <span>Mitarbeiter</span>
@@ -47,29 +50,31 @@
                 </form>
             </span>
 
-            <form id="eventdate-form-{{ eventdate.id }}" method="post" class="pat-autosubmit pat-inject"
-                  action="{% url 'vaple_core:update_event_date' eventdate.id %}#event-list">
-                {% csrf_token %}
-                <span>
-                    <input name="date" type="date" value="{{ eventdate.date.isoformat }}" />
+            <span>
+                <form id="eventdate-form-{{ eventdate.id }}" method="post" class="pat-autosubmit pat-inject"
+                    action="{% url 'vaple_core:update_event_date' eventdate.id %}#event-list">
+                    {% csrf_token %}
+                        <input name="date" type="date" value="{{ eventdate.date.isoformat }}" />
+                        <input name="event" type="hidden" value="{{ event.id }}" />
+                        <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
+                        <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
+                        <input type="submit" value="Speichern" class="save eventdate">
+                </form>
+            </span>
+            <span>
+                <form id="eventdate-employees-form-{{ eventdate.id }}" method="post" class="pat-autosubmit pat-inject"
+                    action="{% url 'vaple_core:update_event_date' eventdate.id %}#eventdate-employees-form-{{ eventdate.id }}">
+                    {% csrf_token %}
                     <input name="event" type="hidden" value="{{ event.id }}" />
+                    <input name="date" type="hidden" value="{{ eventdate.date.isoformat }}" />
+                    {{ eventdate_form.as_spans }}
                     <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
                     <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
-                    <input type="submit" value="Speichern" class="save eventdate">
-                </span>
-            </form>
-            <form id="eventdate-employees-form-{{ eventdate.id }}" method="post" class="pat-autosubmit pat-inject"
-                  action="{% url 'vaple_core:update_event_date' eventdate.id %}#eventdate-employees-form-{{ eventdate.id }}">
-                {% csrf_token %}
-                <input name="event" type="hidden" value="{{ event.id }}" />
-                <input name="date" type="hidden" value="{{ eventdate.date.isoformat }}" />
-                {{ eventdate_form.as_spans }}
-                <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
-                <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
-                <span class="save employees">
-                    <input type="submit" value="Speichern">
-                </span>
-            </form>
+                    <span class="save employees">
+                        <input type="submit" value="Speichern">
+                    </span>
+                </form>
+            </span>
             <form id="event-form-{{ event.id }}-{{ eventdate.id }}" method="post" class="pat-autosubmit pat-inject event-form-{{ event.id }}"
                   data-pat-autosubmit="delay: 3000ms"
                   action="{% url 'vaple_core:update_event' event.id %}#event-list">
@@ -84,6 +89,7 @@
     {% empty %}
         <p>Keine Veranstaltungen mit den gewählten Kriterien gefunden.</p>
     {% endfor %}
+    {% if show_orphans %}
     {% for event, form in orphans %}
         <div class="row">
           <span>
@@ -120,6 +126,7 @@
 
         </div>
     {% endfor %}
+    {% endif %}
     <form method="post" action="{% url 'vaple_core:add_event' %}">
         {% csrf_token %}
         <input name="title" type="hidden" value="Neue Veranstaltung" />

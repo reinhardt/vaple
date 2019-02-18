@@ -145,9 +145,11 @@ class EventDateForm(VapleForm):
 
 
 class EventOverview(generic.list.ListView):
+
     model = EventDate
     template_name = 'vaple_core/event_list.html'
     paginate_by = 50
+    show_orphans = True
 
     def add_months(self, basedate, num_months=1):
         return basedate.replace(month=(basedate.month + num_months) % 12)
@@ -236,6 +238,7 @@ class EventOverview(generic.list.ListView):
         context['date_from'] = self.date_from
         context['date_to'] = self.date_to
         context['quicklinks'] = self.quicklinks
+        context['show_orphans'] = self.show_orphans
         return context
 
 
@@ -245,6 +248,7 @@ class EventOverviewExport(EventOverview, PDFTemplateView):
     cmd_options = {
         'orientation': 'Landscape',
     }
+    show_orphans = False
 
     def get(self, request, *args, **kwargs):
         return EventOverview.get(self, request, *args, **kwargs)

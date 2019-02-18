@@ -16,8 +16,10 @@ div.event-list span.save {
 }
 div.event-list span {
     display: table-cell;
-    height: 4em;
     vertical-align: middle;
+}
+div.event-list .header span {
+    height: 2em;
 }
 div.event-list span.small {
 }
