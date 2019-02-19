@@ -14,4 +14,6 @@ urlpatterns = [
     path('dates/<int:pk>/update/', views.EventDateUpdate.as_view(), name='update_event_date'),
     path('dates/<int:pk>/delete/', views.EventDateDelete.as_view(), name='delete_event_date'),
     path('export-full', views.EventOverviewExport.as_view(), name='export-full'),
+    path('export-employee/<int:pk>', views.EmployeeExport.as_view(), name='export-employee'),
+    path('export-employees-batch', views.batch_employee_export, name='export-employees-batch'),
 ]

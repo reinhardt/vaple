@@ -2,12 +2,16 @@ from datetime import date
 from datetime import timedelta
 from django.forms import ModelForm
 from django.forms import CheckboxSelectMultiple
+from django.http import FileResponse
 from django.urls import reverse_lazy
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.views import generic
+from io import BytesIO
 from urllib.parse import urlencode
 from wkhtmltopdf.views import PDFTemplateView
+from zipfile import ZipFile
+from .models import Employee
 from .models import Event
 from .models import EventDate
 
@@ -207,7 +211,7 @@ class EventOverview(generic.list.ListView):
             )
         return quicklinks
 
-    def get_queryset(self):
+    def _get_queryset(self):
         date_from = self.date_from
         date_to = self.date_to
         queryset = self.model._default_manager.order_by('date')
@@ -215,13 +219,16 @@ class EventOverview(generic.list.ListView):
             queryset = queryset.filter(date__gt=date_from)
         if date_to:
             queryset = queryset.filter(date__lt=date_to)
+        return queryset
+
+    def get_queryset(self):
         return [
             (
                 eventdate,
                 eventdate.event,
                 EventDateForm(instance=eventdate),
                 EventForm(instance=eventdate.event),
-            ) for eventdate in queryset
+            ) for eventdate in self._get_queryset()
         ]
 
     def get_context_data(self, **kwargs):
@@ -253,6 +260,40 @@ class EventOverviewExport(EventOverview, PDFTemplateView):
     def get(self, request, *args, **kwargs):
         return EventOverview.get(self, request, *args, **kwargs)
 
+
+class EmployeeExport(EventOverviewExport):
+
+    @property
+    def filename(self):
+        filename = '{name}-{date_from}_{date_to}.pdf'.format(
+            name=Employee.objects.get(pk=self.kwargs['pk']).name,
+            date_from=self.date_from.isoformat(),
+            date_to=self.date_to.isoformat(),
+        )
+        return filename
+
+    def _get_queryset(self):
+        queryset = super(EmployeeExport, self)._get_queryset()
+        queryset = queryset.filter(employees=self.kwargs['pk'])
+        return queryset
+
+def batch_employee_export(request):
+    stream = BytesIO()
+    zipped = ZipFile(stream, 'w')
+    for employee in Employee.objects.all():
+        view = EmployeeExport.as_view()(request, pk=employee.pk)
+        zipped.writestr(view.filename, view.rendered_content)
+    zipped.close()
+    stream.seek(0)
+    return FileResponse(
+        streaming_content=stream,
+        as_attachment=True,
+        filename='batch_employee_export-{date_from}_{date_to}.zip'.format(
+            date_from=request.GET.get('from'),
+            date_to=request.GET.get('to'),
+        ),
+        content_type='application/zip',
+    )
 
 class RedirectToIndex(object):
 
