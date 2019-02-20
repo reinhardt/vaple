@@ -13,14 +13,16 @@
       <form method="get" class="pat-autosubmit">
         <label for="from">Von</label><input name="from" type="date" value="{{ date_from.isoformat }}" />
         <label for="to">Bis</label><input name="to" type="date" value="{{ date_to.isoformat }}" />
-        <input type="submit" value="Filtern" />
+        <input type="submit" value="Filtern" class="save" />
       </form>
     </div>
     <div class="export">
-        <a href="export-full?from={{ date_from.isoformat }}&to={{ date_to.isoformat }}">Voller Export</a>
-        <a href="export-employees-batch?from={{ date_from.isoformat }}&to={{ date_to.isoformat }}">Batch Export Mitarbeiter</a>
+        Export: 
+        <a href="export-full?from={{ date_from.isoformat }}&to={{ date_to.isoformat }}">Voll</a>
+        <a href="export-employees-batch?from={{ date_from.isoformat }}&to={{ date_to.isoformat }}">Mitarbeiter</a>
     </div>
     <div class="event-list" id="event-list">
+    {% if object_list %}
         <div class="row header">
             <span class="small"></span>
             <span>Datum</span>
@@ -29,6 +31,7 @@
             <span>{{ name }}</span>
         {% endfor %}
         </div>
+    {% endif %}
     {% for eventdate, event, eventdate_form, event_form in object_list %}
         <div class="row event-{{ event.id }}">
             <span class="small">
@@ -91,6 +94,16 @@
         <p>Keine Veranstaltungen mit den gewählten Kriterien gefunden.</p>
     {% endfor %}
     {% if show_orphans %}
+        {% if orphans %}
+        <div class="row header">
+            <span class="small"></span>
+            <span>Datum</span>
+            <span>Mitarbeiter</span>
+        {% for name in verbose_names %}
+            <span>{{ name }}</span>
+        {% endfor %}
+        </div>
+        {% endif %}
     {% for event, form in orphans %}
         <div class="row">
           <span>
@@ -128,7 +141,7 @@
         </div>
     {% endfor %}
     {% endif %}
-    <form method="post" action="{% url 'vaple_core:add_event' %}">
+    <form id="new-event" method="post" action="{% url 'vaple_core:add_event' %}">
         {% csrf_token %}
         <input name="title" type="hidden" value="Neue Veranstaltung" />
         <input name="room" type="hidden" value="" />
@@ -137,4 +150,7 @@
         <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
         <input type="submit" value="Neu">
     </form>
+    <div class="admin">
+        <a href="/admin">Admin</a>
+    </div>
 {% endblock %}

@@ -1,5 +1,18 @@
+a, a:visited {
+    color: blue;
+}
 .quicklinks {
     padding-bottom: .5em;
+}
+.export {
+    padding: .5em;
+}
+.export a {
+    padding: .25em;
+}
+.admin,
+#new-event {
+    float: right;
 }
 div.event-list form {
     display: contents;
@@ -10,6 +23,7 @@ div.event-list .row {
 div.event-list .row:nth-child(odd) {
     background-color: #EEE;
 }
+.save,
 div.event-list .save,
 div.event-list span.save {
     display: none;
