@@ -7,7 +7,7 @@
     <div class="filters">
       <div class="quicklinks">
         {% for link in quicklinks %}
-        <a href="?from={{ link.date_from.isoformat }}&to={{ link.date_to.isoformat }}">{{ link.title }}</a>
+        <a class="{{ link.is_current }}" href="?from={{ link.date_from.isoformat }}&to={{ link.date_to.isoformat }}">{{ link.title }}</a>
         {% endfor %}
       </div>
       <form method="get" class="pat-autosubmit">

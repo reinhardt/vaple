@@ -209,6 +209,11 @@ class EventOverview(generic.list.ListView):
                     'title': date_from.strftime('%B'),
                 }
             )
+        for link in quicklinks:
+            link['is_current'] = 'current' if (
+                link['date_from'] == self.date_from and
+                link['date_to'] == self.date_to
+            ) else ''
         return quicklinks
 
     def _get_queryset(self):

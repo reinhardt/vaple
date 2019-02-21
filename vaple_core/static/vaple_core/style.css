@@ -4,6 +4,9 @@ a, a:visited {
 .quicklinks {
     padding-bottom: .5em;
 }
+.quicklinks .current {
+    font-weight: bold;
+}
 .export {
     padding: .5em;
 }
