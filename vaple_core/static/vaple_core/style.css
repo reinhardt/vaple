@@ -56,3 +56,17 @@ div.event-list .wanted {
 div.event-list .row:nth-child(odd) .wanted {
     background-color: #EE6800;
 }
+.pat-expandable .closed ul {
+    visibility: hidden;
+    height: 0;
+    transition: 500ms;
+}
+.pat-expandable .open ul {
+    transition: 500ms;
+}
+.pat-expandable ul li {
+    height: 1.5em;
+}
+.pat-expandable form {
+    display: inline;
+}

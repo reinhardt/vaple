@@ -16,4 +16,6 @@ urlpatterns = [
     path('export-full', views.EventOverviewExport.as_view(), name='export-full'),
     path('export-employee/<int:pk>', views.EmployeeExport.as_view(), name='export-employee'),
     path('export-employees-batch', views.batch_employee_export, name='export-employees-batch'),
+    path('events/<int:pk>/folder', views.event_folder, name='event_folder'),
+    path('events/<int:pk>/folder_open', views.event_folder_open, name='event_folder_open'),
 ]

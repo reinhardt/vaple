@@ -1,13 +1,20 @@
+import sys
 from datetime import date
 from datetime import timedelta
+from django.conf import settings
 from django.forms import ModelForm
 from django.forms import CheckboxSelectMultiple
 from django.http import FileResponse
+from django.shortcuts import redirect
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.views import generic
 from io import BytesIO
+from pathlib import Path
+from pathlib import WindowsPath
+from subprocess import Popen
 from urllib.parse import urlencode
 from wkhtmltopdf.views import PDFTemplateView
 from zipfile import ZipFile
@@ -20,10 +27,10 @@ EVENT_FIELDS = [
     'title',
     'room',
     'sound_type',
+    'additional_info',
     'ba',
     'rider',
     'folder',
-    'additional_info',
 ]
 
 
@@ -369,3 +376,52 @@ class EventDateList(generic.list.ListView):
 class EventDateDelete(RedirectToIndex, generic.edit.DeleteView):
     model = EventDate
     template_name_suffix = '_form'
+
+
+def event_folder(request, pk):
+    base_path = Path(request.GET.get('base_path', settings.EVENTS_FOLDER))
+
+    def make_entry(path):
+        folders = [make_entry(x) for x in path.iterdir()
+                   if x.is_dir()]
+        files = [x.relative_to(base_path) for x in path.iterdir()
+                 if x.is_file()]
+        length = (len(folders) + len(files)) * 5
+        return {
+            'path': path,
+            'name': path.name,
+            'folders': sorted(folders, key=lambda f: f['path']),
+            'files': sorted(files),
+            'list_class': 'pat-expandable root',
+            'length': int(length),
+        }
+    context = make_entry(base_path)
+    event = Event.objects.get(pk=pk)
+    context['event_form'] = EventForm(instance=event)
+    context['pk'] = pk
+    context['title'] = event.title
+    context['hidden_fields'] = [
+        (name, getattr(event, name))
+        for name in [
+            'title',
+            'room',
+            'sound_type',
+            'ba',
+            'rider',
+            'additional_info',
+        ]
+    ]
+    return render(request, 'vaple_core/event_folder.html', context)
+
+
+def event_folder_open(request, pk):
+    command = None
+    event = Event.objects.get(pk=pk)
+    folder = event.folder
+    if sys.platform == 'linux':
+        command = 'xdg-open'
+    elif sys.platform.startswith('win'):
+        command = 'explorer'
+    if command is not None:
+        Popen([command, folder])
+    return redirect('vaple_core:index')

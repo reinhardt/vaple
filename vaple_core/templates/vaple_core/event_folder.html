@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Ordner auswählen - Vaple{% endblock %}
+
+{% block content %}
+
+<div id="content">
+    <h3>Ordner für {{ title }} wählen</h3>
+    <form action="{% url 'vaple_core:update_event' pk %}#event-list" method="post" class="pat-inject">
+        {% csrf_token %}
+        {% for name, value in hidden_fields %}
+        <input type="hidden" name="{{ name }}" value="{{ value }}" />
+        {% endfor %}
+        {% include "vaple_core/event_folder_content.html" %}
+    </form>
+</div>
+
+{% endblock %}

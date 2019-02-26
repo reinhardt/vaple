@@ -30,6 +30,7 @@
         {% for name in verbose_names %}
             <span>{{ name }}</span>
         {% endfor %}
+            <span></span>
         </div>
     {% endif %}
     {% for eventdate, event, eventdate_form, event_form in object_list %}
@@ -84,11 +85,12 @@
                   action="{% url 'vaple_core:update_event' event.id %}#event-list">
               {% csrf_token %}
               {{ event_form.as_spans }}
-              <span></span>
               <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
               <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
               <span class="save event"><input type="submit" value="Speichern"></span>
             </form>
+            <span><a href="{% url 'vaple_core:event_folder' event.id %}#content" class="pat-modal">Wählen</a><a href="{% url 'vaple_core:event_folder_open' event.id %}">Öffnen</a></span>
+            <span></span>
         </div>
     {% empty %}
         <p>Keine Veranstaltungen mit den gewählten Kriterien gefunden.</p>

@@ -1,0 +1,16 @@
+<style type="text/css">
+.pat-expandable .open ul.l{{ length }} {
+    height: {{ length }}em;
+}
+</style>
+<ul class="{{ list_class }} l{{ length }}">
+    {% for folder in folders %}
+    <li class="folder"><span class="toggle">{{folder.name}} </span><button name="folder" value="{{folder.path}}" type="submit" class="close-panel">✓</button>
+        {% include "vaple_core/event_folder_content.html" with folders=folder.folders files=folder.files list_class='' %}
+    </li>
+    {% endfor %}
+    {% for file in files %}
+    <li class="file">{{file.name}} <button type="submit" value="{{file.path}}">✓</button>
+    </li>
+    {% endfor %}
+</ul>

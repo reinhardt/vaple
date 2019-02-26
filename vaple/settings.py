@@ -120,7 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.expanduser('~/projects/vaple/vaple_core/static')
+STATIC_ROOT = os.path.join(BASE_DIR, '../vaple_core/static')
 
-EVENTS_FOLDER = os.path.expanduser('~/projects/vaple/files')
+EVENTS_FOLDER = os.path.expanduser('~/projects/vaple/files/')
 WKHTMLTOPDF_CMD = '/nix/store/rx91niyzi9v75cvqbch4hf9bxh0amdpg-wkhtmltopdf-0.12.5/bin/wkhtmltopdf'
