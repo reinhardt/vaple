@@ -232,9 +232,9 @@ class EventOverview(generic.list.ListView):
         date_to = self.date_to
         queryset = self.model._default_manager.order_by('date')
         if date_from:
-            queryset = queryset.filter(date__gt=date_from)
+            queryset = queryset.filter(date__gte=date_from)
         if date_to:
-            queryset = queryset.filter(date__lt=date_to)
+            queryset = queryset.filter(date__lte=date_to)
         return queryset
 
     def get_queryset(self):
@@ -423,6 +423,9 @@ def event_folder(request, pk):
             'folder',
             'additional_info',
         ] if name != field
+    ] + [
+        ('from', request.GET.get('from')),
+        ('to', request.GET.get('to')),
     ]
     return render(request, 'vaple_core/event_folder.html', context)
 

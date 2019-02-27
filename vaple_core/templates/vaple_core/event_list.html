@@ -62,12 +62,15 @@
                         <input name="event" type="hidden" value="{{ event.id }}" />
                         <input name="from" type="hidden" value="{{ date_from.isoformat }}" />
                         <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
+                        {% for employee in eventdate.employees.all %}
+                        <input name="employees" type="hidden" value="{{ employee.pk }}" />
+                        {% endfor %}
                         <input type="submit" value="Speichern" class="save eventdate">
                 </form>
             </span>
             <span>
                 <form id="eventdate-employees-form-{{ eventdate.id }}" method="post" class="pat-autosubmit pat-inject"
-                    action="{% url 'vaple_core:update_event_date' eventdate.id %}#eventdate-employees-form-{{ eventdate.id }}">
+                    action="{% url 'vaple_core:update_event_date' eventdate.id %}#event-list">
                     {% csrf_token %}
                     <input name="event" type="hidden" value="{{ event.id }}" />
                     <input name="date" type="hidden" value="{{ eventdate.date.isoformat }}" />
@@ -88,7 +91,7 @@
               <input name="to" type="hidden" value="{{ date_to.isoformat }}" />
               <span class="save event"><input type="submit" value="Speichern"></span>
             </form>
-            <span class="{{ ba_classes|join:' ' }}">{{ event_ba }}{% if event_folder %}<br /><a href="{% url 'vaple_core:event_folder' event.id %}?field=ba&base_path={{ event.folder }}&choice_type=file#content" class="pat-modal">Wählen</a>{% endif %}{% if event_ba %}<br /><a href="{% url 'vaple_core:event_folder_open' event.id %}?field=ba">Öffnen</a>{% endif %}</span>
+            <span class="{{ ba_classes|join:' ' }}">{{ event_ba }}{% if event_folder %}<br /><a href="{% url 'vaple_core:event_folder' event.id %}?field=ba&base_path={{ event.folder }}&choice_type=file&from={{ date_from.isoformat }}&to={{ date_to.isoformat }}#content" class="pat-modal">Wählen</a>{% endif %}{% if event_ba %}<br /><a href="{% url 'vaple_core:event_folder_open' event.id %}?field=ba">Öffnen</a>{% endif %}</span>
             <span class="{{ rider_classes|join:' ' }}">{{ event_rider }}{% if event_folder %}<br /><a href="{% url 'vaple_core:event_folder' event.id %}?field=rider&base_path={{ event.folder }}&choice_type=file#content" class="pat-modal">Wählen</a>{% endif %}{% if event_rider %}<br /><a href="{% url 'vaple_core:event_folder_open' event.id %}?field=rider">Öffnen</a>{% endif %}</span>
             <span>{{ event_folder }}<br /><a href="{% url 'vaple_core:event_folder' event.id %}?choice_type=folder#content" class="pat-modal">Wählen</a>{% if event_folder %}<br /><a href="{% url 'vaple_core:event_folder_open' event.id %}">Öffnen</a>{% endif %}</span>
             <span></span>
