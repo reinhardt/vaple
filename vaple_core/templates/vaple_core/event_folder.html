@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Ordner auswählen - Vaple{% endblock %}
+{% block title %}{% if choice_type == 'folders' %}Ordner{% else %}Datei{% endif %} auswählen - Vaple{% endblock %}
 
 {% block content %}
 
 <div id="content">
-    <h3>Ordner für {{ title }} wählen</h3>
+    <h3>{% if choice_type == 'folders' %}Ordner{% else %}Datei{% endif %} für {{ title }} wählen</h3>
     <form action="{% url 'vaple_core:update_event' pk %}#event-list" method="post" class="pat-inject">
         {% csrf_token %}
         {% for name, value in hidden_fields %}

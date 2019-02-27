@@ -143,7 +143,11 @@ class VapleForm(ModelForm):
 class EventForm(VapleForm):
     class Meta:
         model = Event
-        fields = EVENT_FIELDS
+        exclude = [
+            'ba',
+            'rider',
+            'folder',
+        ]
 
 
 class EventDateForm(VapleForm):
@@ -240,6 +244,11 @@ class EventOverview(generic.list.ListView):
                 eventdate.event,
                 EventDateForm(instance=eventdate),
                 EventForm(instance=eventdate.event),
+                Path(eventdate.event.folder).name,
+                Path(eventdate.event.ba).name,
+                Path(eventdate.event.rider).name,
+                EventForm(instance=eventdate.event).extra_classes('ba'),
+                EventForm(instance=eventdate.event).extra_classes('rider'),
             ) for eventdate in self._get_queryset()
         ]
 
@@ -380,13 +389,15 @@ class EventDateDelete(RedirectToIndex, generic.edit.DeleteView):
 
 def event_folder(request, pk):
     base_path = Path(request.GET.get('base_path', settings.EVENTS_FOLDER))
+    choice_type = request.GET.get('choice_type', 'folders')
+    field = request.GET.get('field', 'folder')
 
     def make_entry(path):
         folders = [make_entry(x) for x in path.iterdir()
-                   if x.is_dir()]
-        files = [x.relative_to(base_path) for x in path.iterdir()
-                 if x.is_file()]
-        length = (len(folders) + len(files)) * 5
+                   if x.is_dir()] if choice_type == 'folder' else []
+        files = [x for x in path.iterdir()
+                 if x.is_file()] if choice_type == 'file' else []
+        length = (len(folders) + len(files) + 1) * 6
         return {
             'path': path,
             'name': path.name,
@@ -400,6 +411,7 @@ def event_folder(request, pk):
     context['event_form'] = EventForm(instance=event)
     context['pk'] = pk
     context['title'] = event.title
+    context['field'] = field
     context['hidden_fields'] = [
         (name, getattr(event, name))
         for name in [
@@ -408,8 +420,9 @@ def event_folder(request, pk):
             'sound_type',
             'ba',
             'rider',
+            'folder',
             'additional_info',
-        ]
+        ] if name != field
     ]
     return render(request, 'vaple_core/event_folder.html', context)
 
@@ -417,11 +430,12 @@ def event_folder(request, pk):
 def event_folder_open(request, pk):
     command = None
     event = Event.objects.get(pk=pk)
-    folder = event.folder
+    field = request.GET.get('field', 'folder')
+    path = getattr(event, field)
     if sys.platform == 'linux':
         command = 'xdg-open'
     elif sys.platform.startswith('win'):
         command = 'explorer'
     if command is not None:
-        Popen([command, folder])
+        Popen([command, path])
     return redirect('vaple_core:index')
